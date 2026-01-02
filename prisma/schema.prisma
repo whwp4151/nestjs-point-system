@@ -12,7 +12,7 @@ model PointHistory {
   id         Int      @id @default(autoincrement())
   userId     Int
   amount     Int
-  policyType String
+  policyType String   @db.VarChar(50)
   createdAt  DateTime @default(now())
 
   @@index([userId])
