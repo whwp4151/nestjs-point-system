@@ -1,98 +1,118 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 이력 기반 · 정책 기반 포인트 시스템
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS 기반으로 **포인트를 잔액 컬럼으로 저장하지 않고, 이력(PointHistory)의 합으로 계산**하는 포인트 시스템을 구현한다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 핵심 설계 원칙
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 포인트 잔액은 이력의 합으로 계산
 
-## Project setup
+- `PointHistory` 테이블만을 신뢰 소스로 사용
+- 현재 잔액은 `SUM(history.amount)` 로 계산
+- 별도의 `balance` 컬럼을 두지 않음
 
-```bash
-$ pnpm install
-```
+> 잔액 컬럼은 동시성 이슈와 정합성 붕괴의 주요 원인이 되므로 배제
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ pnpm run start
+### 모든 적립/사용 로직은 트랜잭션 처리
 
-# watch mode
-$ pnpm run start:dev
+- 포인트 적립/사용은 **검증 + 이력 저장을 하나의 트랜잭션**으로 처리
+- 실패 시 이력은 절대 남지 않음
 
-# production mode
-$ pnpm run start:prod
-```
+---
 
-## Run tests
+### 비즈니스 로직은 Domain / Service 계층에 위치
 
-```bash
-# unit tests
-$ pnpm run test
+- Controller: 요청/응답 매핑만 담당
+- Service: 유스케이스 조합 및 트랜잭션 경계
+- Domain: 정책 판단, 포인트 계산 로직
 
-# e2e tests
-$ pnpm run test:e2e
+---
 
-# test coverage
-$ pnpm run test:cov
-```
+### 정책 추가 시 기존 코드 수정 최소화
 
-## Deployment
+- 정책은 `PointPolicy` 인터페이스로 추상화
+- 신규 정책은 **구현체 추가만으로 확장** 가능
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 도메인 모델 개요
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+### PointHistory
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+포인트 적립 및 사용의 모든 이력을 기록한다.
 
-## Resources
+- id
+- userId
+- amount (+ 적립 / - 사용)
+- policyType
+- createdAt
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### PointPolicy
 
-## Support
+포인트 적립 정책의 공통 인터페이스
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- 정책별 중복 허용 여부 판단
+- 지급 포인트 계산 책임
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### PointService
 
-## License
+포인트 도메인의 진입점
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- 정책 적용 가능 여부 판단
+- 트랜잭션 시작 및 종료
+- PointHistory 저장
+
+---
+
+## 기능 요구사항 구현 범위
+
+### 포인트 적립
+
+- 정책에 따라 포인트 적립
+- 정책별 중복 적립 제한
+- 적립 실패 시 이력 미저장
+
+---
+
+### 포인트 사용
+
+- 현재 잔액 검증
+- 잔액 초과 사용 불가
+- 사용 요청은 원자적으로 처리
+
+---
+
+### 포인트 조회
+
+- 사용자 현재 포인트 잔액 조회
+- 사용자 포인트 이력 조회
+
+---
+
+## 구현한 포인트 정책
+
+### 가입 축하 포인트
+
+- 회원 가입 시 **1회만 지급**
+- 고정 포인트 지급
+
+---
+
+### 일일 로그인 포인트
+
+- 하루 1회 적립 가능
+- 날짜 기준 중복 체크
+
+---
+
+### 이벤트 기간 보너스
+
+- 특정 기간 동안 지급 포인트 **2배 적용**
+- 다른 정책과 조합 가능
