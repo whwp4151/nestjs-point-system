@@ -17,13 +17,13 @@ export interface PolicyConfig {
 
 // 내부 서비스 간 통신용
 export interface PointBalance {
-  userId: string;
+  userId: number;
   balance: number;
 }
 
 // 정책 실행 컨텍스트 (내부 전용)
 export interface PolicyExecutionContext {
-  userId: string;
+  userId: number;
   policyCode: PolicyCode;
   requestedAt: Date;
 }

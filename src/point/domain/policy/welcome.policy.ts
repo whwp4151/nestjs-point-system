@@ -1,12 +1,15 @@
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { PointPolicyInterface } from "./point-policy.interface";
-import { EarnPointDto } from "src/point/dto/earn-point.dto";
-import { PolicyCode } from "src/point/type/point.types";
+import { EarnPointDto } from "@/point/dto/earn-point.dto";
+import { PolicyCode } from "@/point/type/point.types";
+
+const DEFAULT_WELCOME_BONUS = 1000;
 
 export class WelcomePolicy implements PointPolicyInterface {
+
   private readonly amount: number;
 
-  constructor(amount: number = 1000) {
+  constructor(amount: number = DEFAULT_WELCOME_BONUS) {
     this.amount = amount;
   }
 

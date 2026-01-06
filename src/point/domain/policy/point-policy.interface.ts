@@ -1,5 +1,5 @@
-import { EarnPointDto } from 'src/point/dto/earn-point.dto';
-import { PrismaService } from '../../../prisma/prisma.service';
+import { EarnPointDto } from '@/point/dto/earn-point.dto';
+import { PrismaService } from '@/prisma/prisma.service';
 
 
 export interface PointPolicyInterface {
