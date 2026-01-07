@@ -3,15 +3,7 @@ import { PointPolicyInterface } from "./point-policy.interface";
 import { EarnPointDto } from "@/point/dto/earn-point.dto";
 import { PolicyCode } from "@/point/type/point.types";
 
-const DEFAULT_WELCOME_BONUS = 1000;
-
 export class WelcomePolicy implements PointPolicyInterface {
-
-  private readonly amount: number;
-
-  constructor(amount: number = DEFAULT_WELCOME_BONUS) {
-    this.amount = amount;
-  }
 
   async canApply(prisma: PrismaService, dto: EarnPointDto): Promise<boolean> {
     // 이미 가입 축하 포인트를 받았는지 확인
