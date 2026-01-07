@@ -8,7 +8,7 @@ export class PointHistoryDto {
     createdAt: Date;
 
     constructor(id: number, point: number, policyCode: PolicyCode, createdAt: Date) {
-        const metadata = POLICY_METADATA[PolicyCode.WELCOME];
+        const metadata = POLICY_METADATA[policyCode];
         
         this.id = id;
         this.point = point;

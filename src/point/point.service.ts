@@ -18,7 +18,7 @@ export class PointService {
     async earnPoints(dto: EarnPointDto): Promise<PointHistoryDto> {
         return await this.prisma.$transaction(async (tx) => {
 
-            const policy = this.policyFactory.getPolicy(PolicyCode.WELCOME);
+            const policy = this.policyFactory.getPolicy(dto.policyCode);
 
             const point = await policy.calcPoint(dto.userId, this.prisma);
             if (point <= 0) {

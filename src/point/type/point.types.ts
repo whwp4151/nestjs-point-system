@@ -1,3 +1,8 @@
+import { PrismaService } from "@/prisma/prisma.service";
+import { Prisma } from "generated/prisma/client";
+
+export type PrismaTx = PrismaService | Prisma.TransactionClient;
+
 export enum PointType {
   EARN = 'EARN',
   USE = 'USE',

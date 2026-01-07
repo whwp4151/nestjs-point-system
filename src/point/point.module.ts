@@ -5,12 +5,11 @@ import { PolicyFactory } from './domain/policy/policy.factory';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { WelcomePolicy } from './domain/policy/welcome.policy';
 import { DailyLoginPolicy } from './domain/policy/daily-login.policy';
-import { DiscoveryService } from '@nestjs/core';
+import { DiscoveryModule } from '@nestjs/core';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, DiscoveryModule],
   providers: [
-    DiscoveryService,
     PointService,
     PolicyFactory,
     WelcomePolicy,

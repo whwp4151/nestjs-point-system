@@ -1,6 +1,5 @@
-import { PrismaService } from "@/prisma/prisma.service";
 import { PointPolicyInterface } from "./interface/point-policy.interface";
-import { PointState, POLICY_METADATA, PolicyCode } from "@/point/type/point.types";
+import { PointState, POLICY_METADATA, PolicyCode, PrismaTx } from "@/point/type/point.types";
 import { PointStateDto } from "@/point/dto/point-state.dto";
 import { Injectable } from "@nestjs/common";
 import { Policy } from "./policy.decorator";
@@ -15,7 +14,7 @@ export class WelcomePolicy implements PointPolicyInterface {
     return PolicyCode.WELCOME;
   }
 
-  async calcPoint(userId: number, prisma: PrismaService): Promise<number> {
+  async calcPoint(userId: number, prisma: PrismaTx): Promise<number> {
     // 제한 조건을 만족했느냐?
     if (await this.checkLimitCond(userId, prisma)) {
       return this.metadata.amount;
@@ -24,7 +23,7 @@ export class WelcomePolicy implements PointPolicyInterface {
     return 0;
   }
 
-  async getPointState(userId: number, prisma: PrismaService): Promise<PointStateDto> {
+  async getPointState(userId: number, prisma: PrismaTx): Promise<PointStateDto> {
     var state : PointState;
     if (await this.checkLimitCond(userId, prisma)) {
       state = PointState.CONDITION_COMPLETED;
@@ -40,7 +39,7 @@ export class WelcomePolicy implements PointPolicyInterface {
   }
 
   // 제한 조건
-  private async checkLimitCond(userId: number, prisma: PrismaService): Promise<boolean> {
+  private async checkLimitCond(userId: number, prisma: PrismaTx): Promise<boolean> {
     // 이미 가입 축하 포인트를 받았는지 확인
     const existingHistory = await prisma.pointHistory.findFirst({
       where: {

@@ -1,9 +1,8 @@
 import { PointStateDto } from '@/point/dto/point-state.dto';
-import { PolicyCode } from '@/point/type/point.types';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PolicyCode, PrismaTx } from '@/point/type/point.types';
 
 export interface PointPolicyInterface {
   getPolicyCode(): PolicyCode;
-  calcPoint(userId: number, prisma: PrismaService): Promise<number>;
-  getPointState(userId: number, prisma: PrismaService): Promise<PointStateDto>;
+  calcPoint(userId: number, prisma: PrismaTx): Promise<number>;
+  getPointState(userId: number, prisma: PrismaTx): Promise<PointStateDto>;
 }
