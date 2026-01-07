@@ -3,6 +3,12 @@ export enum PointType {
   USE = 'USE',
 }
 
+export enum PointState {
+  NONE = 'NONE',                                // 미진행
+  CONDITION_COMPLETED = 'CONDITION_COMPLETED',  // 포인트 지급 조건 달성
+  POINT_PAID = 'POINT_PAID',                    // 포인트 지급한 상태
+}
+
 export enum PolicyCode {
   WELCOME = 'WELCOME',
   DAILY_LOGIN = 'DAILY_LOGIN',

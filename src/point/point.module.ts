@@ -1,9 +1,21 @@
 import { Module } from '@nestjs/common';
 import { PointService } from './point.service';
 import { PointController } from './point.controller';
+import { PolicyFactory } from './domain/policy/policy.factory';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { WelcomePolicy } from './domain/policy/welcome.policy';
+import { DailyLoginPolicy } from './domain/policy/daily-login.policy';
+import { DiscoveryService } from '@nestjs/core';
 
 @Module({
-  providers: [PointService],
+  imports: [PrismaModule],
+  providers: [
+    DiscoveryService,
+    PointService,
+    PolicyFactory,
+    WelcomePolicy,
+    DailyLoginPolicy,
+  ],
   controllers: [PointController]
 })
 export class PointModule {}

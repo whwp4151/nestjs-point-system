@@ -7,9 +7,4 @@ export class EarnPointDto {
 
   @IsEnum(PolicyCode)
   policyCode: PolicyCode;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  baseAmount?: number;
 }
