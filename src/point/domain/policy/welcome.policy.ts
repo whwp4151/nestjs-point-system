@@ -1,23 +1,49 @@
-import { PrismaService } from "@/prisma/prisma.service";
-import { PointPolicyInterface } from "./point-policy.interface";
-import { EarnPointDto } from "@/point/dto/earn-point.dto";
-import { PolicyCode } from "@/point/type/point.types";
+import { PointPolicyInterface } from "./interface/point-policy.interface";
+import { PointState, POLICY_METADATA, PolicyCode, PrismaTx } from "@/point/type/point.types";
+import { PointStateDto } from "@/point/dto/point-state.dto";
+import { Injectable } from "@nestjs/common";
+import { Policy } from "./policy.decorator";
 
-const DEFAULT_WELCOME_BONUS = 1000;
-
+@Injectable()
+@Policy()
 export class WelcomePolicy implements PointPolicyInterface {
 
-  private readonly amount: number;
+  private readonly metadata = POLICY_METADATA[PolicyCode.WELCOME];
 
-  constructor(amount: number = DEFAULT_WELCOME_BONUS) {
-    this.amount = amount;
+  getPolicyCode(): PolicyCode {
+    return PolicyCode.WELCOME;
   }
 
-  async canApply(prisma: PrismaService, dto: EarnPointDto): Promise<boolean> {
+  async calcPoint(userId: number, prisma: PrismaTx): Promise<number> {
+    // 제한 조건을 만족했느냐?
+    if (await this.checkLimitCond(userId, prisma)) {
+      return this.metadata.amount;
+    }
+
+    return 0;
+  }
+
+  async getPointState(userId: number, prisma: PrismaTx): Promise<PointStateDto> {
+    var state : PointState;
+    if (await this.checkLimitCond(userId, prisma)) {
+      state = PointState.CONDITION_COMPLETED;
+    } else {
+      state = PointState.POINT_PAID;
+    }
+
+    return {
+      point: this.metadata.amount, 
+      policyCode: PolicyCode.WELCOME, 
+      state: state
+    };
+  }
+
+  // 제한 조건
+  private async checkLimitCond(userId: number, prisma: PrismaTx): Promise<boolean> {
     // 이미 가입 축하 포인트를 받았는지 확인
     const existingHistory = await prisma.pointHistory.findFirst({
       where: {
-        userId: dto.userId,
+        userId: userId,
         policyType: PolicyCode.WELCOME,
       },
     });
@@ -26,14 +52,4 @@ export class WelcomePolicy implements PointPolicyInterface {
     return existingHistory === null;
   }
 
-  async calculatePoints(dto: EarnPointDto): Promise<number> {
-    return this.amount;
-  }
-
-  generateMetadata(dto: EarnPointDto): Record<string, any> {
-    return {
-      appliedAt: new Date().toISOString(),
-      oneTimeBonus: true,
-    };
-  }
 }
