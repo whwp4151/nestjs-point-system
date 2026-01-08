@@ -9,6 +9,10 @@ export class PointHistoryDto {
 
     constructor(id: number, point: number, policyCode: PolicyCode, createdAt: Date) {
         const metadata = POLICY_METADATA[policyCode];
+
+        if (!metadata) {
+            throw new Error(`Metadata not found for policy code: ${policyCode}`);
+        }
         
         this.id = id;
         this.point = point;

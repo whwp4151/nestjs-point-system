@@ -20,7 +20,7 @@ export class PointService {
 
             const policy = this.policyFactory.getPolicy(dto.policyCode);
 
-            const point = await policy.calcPoint(dto.userId, this.prisma);
+            const point = await policy.calcPoint(dto.userId, tx);
             if (point <= 0) {
                 throw new Error('적립 포인트는 0보다 커야 합니다.');
             }

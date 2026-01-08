@@ -14,7 +14,7 @@ export class PolicyFactory implements OnModuleInit {
     private readonly reflector: Reflector,
   ) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     // ✅ 모든 Provider 중에서 @Policy() 데코레이터가 붙은 것만 자동 수집
     const providers = this.discoveryService.getProviders();
     
