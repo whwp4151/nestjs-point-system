@@ -1,0 +1,36 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 사용자
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  pointHistoryList PointHistory[]
+  
+  @@map("users")
+}
+
+// 포인트 이력
+model PointHistory {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  policyType  String?  @db.VarChar(50)
+  amount      Int      // 적립은 양수, 사용은 음수
+  createdAt   DateTime @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([policyType])
+  @@map("point_history")
+}
