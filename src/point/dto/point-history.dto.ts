@@ -3,21 +3,18 @@ import { POLICY_METADATA, PolicyCode } from "../type/point.types";
 export class PointHistoryDto {
     id: number;
     point: number;
-    policyCode: PolicyCode;
-    policyName: string;
+    policyCode: PolicyCode | null;
+    policyName: string | null;
     createdAt: Date;
 
-    constructor(id: number, point: number, policyCode: PolicyCode, createdAt: Date) {
-        const metadata = POLICY_METADATA[policyCode];
-
-        if (!metadata) {
-            throw new Error(`Metadata not found for policy code: ${policyCode}`);
-        }
-        
+    constructor(id: number, point: number, createdAt: Date, policyCode: PolicyCode | null) {
         this.id = id;
         this.point = point;
-        this.policyCode = policyCode;
-        this.policyName = metadata.name;
         this.createdAt = createdAt;
+
+        this.policyCode = policyCode;
+        this.policyName = policyCode
+        ? POLICY_METADATA[policyCode].name
+        : null;
     }
 }

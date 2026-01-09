@@ -24,12 +24,9 @@ export class WelcomePolicy implements PointPolicyInterface {
   }
 
   async getPointState(userId: number, prisma: PrismaTx): Promise<PointStateDto> {
-    var state : PointState;
-    if (await this.checkLimitCond(userId, prisma)) {
-      state = PointState.CONDITION_COMPLETED;
-    } else {
-      state = PointState.POINT_PAID;
-    }
+    const state = await this.checkLimitCond(userId, prisma) ? 
+      PointState.CONDITION_COMPLETED : 
+      PointState.POINT_PAID;
 
     return {
       point: this.metadata.amount, 
