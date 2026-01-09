@@ -6,6 +6,7 @@ import { PointType, PolicyCode, PrismaTx } from './type/point.types';
 import { PolicyFactory } from './domain/policy/policy.factory';
 import { PointBalanceDto } from './dto/point-balance.dto';
 import { PointUseResponseDto, UsePointDto } from './dto/use-point.dto';
+import { PointHistory, Prisma } from 'generated/prisma/client';
 
 @Injectable()
 export class PointService {
@@ -36,12 +37,9 @@ export class PointService {
                 },
             });
 
-            return new PointHistoryDto(
-                history.id,
-                history.amount,
-                history.createdAt,
-                history.policyType as PolicyCode | null,
-            );
+            return this.toPointHistoryDto(history);
+        }, {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable
         });
     }
 
@@ -74,18 +72,18 @@ export class PointService {
                 balance: newBalance,
                 message: `${dto.amount} 포인트가 사용되었습니다.`,
             };
+        }, {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable
         });
     }
 
     async getBalance(userId: number): Promise<PointBalanceDto> {
-        return await this.prisma.$transaction(async (tx) => {
-            const currentBalance = await this.getBalanceInTransaction(tx, userId);
+        const currentBalance = await this.getBalanceInTransaction(this.prisma, userId);
 
-            return {
-                userId,
-                balance: currentBalance,
-            };
-        });
+        return {
+            userId,
+            balance: currentBalance,
+        };
     }
 
     async getPointHistory(userId: number): Promise<PointHistoryDto[]> {
@@ -94,14 +92,7 @@ export class PointService {
             orderBy: { createdAt: 'desc' },
         });
 
-        return histories.map((history) => (
-            new PointHistoryDto(
-                history.id,
-                history.amount,
-                history.createdAt,
-                history.policyType as PolicyCode | null,
-            )
-        ));
+        return histories.map((history) => (this.toPointHistoryDto(history)));
     }
 
     /**
@@ -117,6 +108,15 @@ export class PointService {
         });
 
         return result._sum.amount || 0;
+    }
+
+    private toPointHistoryDto(history: PointHistory): PointHistoryDto {
+        return new PointHistoryDto(
+            history.id,
+            history.amount,
+            history.createdAt,
+            history.policyType as PolicyCode | null,
+        );
     }
 
 }
