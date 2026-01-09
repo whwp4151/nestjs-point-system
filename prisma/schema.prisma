@@ -24,7 +24,7 @@ model User {
 model PointHistory {
   id          Int      @id @default(autoincrement())
   userId      Int
-  policyType  String   @db.VarChar(50)
+  policyType  String?  @db.VarChar(50)
   amount      Int      // 적립은 양수, 사용은 음수
   createdAt   DateTime @default(now())
 
