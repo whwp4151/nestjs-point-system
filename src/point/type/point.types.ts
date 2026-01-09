@@ -3,11 +3,6 @@ import { Prisma } from "generated/prisma/client";
 
 export type PrismaTx = PrismaService | Prisma.TransactionClient;
 
-export enum PointType {
-  EARN = 'EARN',
-  USE = 'USE',
-}
-
 export enum PointState {
   NONE = 'NONE',                                // 미진행
   CONDITION_COMPLETED = 'CONDITION_COMPLETED',  // 포인트 지급 조건 달성
@@ -39,8 +34,3 @@ export const POLICY_METADATA: Record<PolicyCode, PolicyMetadata> = {
     amount: 100,
   },
 };
-
-// 헬퍼 함수
-export function getPolicyMetadata(code: PolicyCode): PolicyMetadata {
-  return POLICY_METADATA[code];
-}

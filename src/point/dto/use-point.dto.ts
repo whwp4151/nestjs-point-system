@@ -1,6 +1,11 @@
+import { IsNumber, IsPositive } from "class-validator";
 
 export class UsePointDto {
+    @IsNumber()
     userId: number;
+
+    @IsNumber()
+    @IsPositive()
     amount: number;
 }
 

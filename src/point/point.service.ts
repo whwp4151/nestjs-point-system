@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EarnPointDto } from './dto/earn-point.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PointHistoryDto } from './dto/point-history.dto';
-import { PointType, PolicyCode, PrismaTx } from './type/point.types';
+import { PolicyCode, PrismaTx } from './type/point.types';
 import { PolicyFactory } from './domain/policy/policy.factory';
 import { PointBalanceDto } from './dto/point-balance.dto';
 import { PointUseResponseDto, UsePointDto } from './dto/use-point.dto';
