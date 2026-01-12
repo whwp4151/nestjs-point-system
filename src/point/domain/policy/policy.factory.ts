@@ -4,6 +4,8 @@ import { PointPolicyInterface } from "./interface/point-policy.interface";
 import { PolicyCode } from "@/point/type/point.types";
 import { InstanceWrapper } from "@nestjs/core/injector/instance-wrapper";
 import { POLICY_METADATA_KEY } from "./policy.decorator";
+import { CustomException } from "@/common/exception/custom.exception";
+import { ErrorCode } from "@/common/exception/error-code";
 
 @Injectable()
 export class PolicyFactory implements OnModuleInit {
@@ -41,7 +43,7 @@ export class PolicyFactory implements OnModuleInit {
     const policy = this.policyMap.get(code);
     
     if (!policy) {
-      throw new Error(`지원하지 않는 정책 코드입니다: ${code}`);
+      throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, `지원하지 않는 정책 코드입니다: ${code}`,);
     }
     
     return policy;

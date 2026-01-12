@@ -7,6 +7,8 @@ import { PolicyFactory } from './domain/policy/policy.factory';
 import { PointBalanceDto } from './dto/point-balance.dto';
 import { PointUseResponseDto, UsePointDto } from './dto/use-point.dto';
 import { PointHistory, Prisma } from 'generated/prisma/client';
+import { CustomException } from '@/common/exception/custom.exception';
+import { ErrorCode } from '@/common/exception/error-code';
 
 @Injectable()
 export class PointService {
@@ -25,7 +27,7 @@ export class PointService {
 
             const point = await policy.calcPoint(dto.userId, tx);
             if (point <= 0) {
-                throw new Error('적립 포인트는 0보다 커야 합니다.');
+                throw new CustomException(ErrorCode.POINT_AMOUNT_INVALID, '적립 포인트는 0보다 커야 합니다.',);
             }
 
             // 포인트 이력 생성
@@ -48,13 +50,11 @@ export class PointService {
             const currentBalance = await this.getBalanceInTransaction(tx, dto.userId);
 
             if (currentBalance < dto.amount) {
-                throw new Error(
-                    `포인트가 부족합니다. (현재 잔액: ${currentBalance}, 요청 금액: ${dto.amount})`
-                );
+                throw new CustomException(ErrorCode.POINT_AMOUNT_INVALID, `포인트가 부족합니다. (현재 잔액: ${currentBalance}, 요청 금액: ${dto.amount}).`,);
             }
 
             if (dto.amount <= 0) {
-                throw new Error('사용 포인트는 0보다 커야 합니다.');
+                throw new CustomException(ErrorCode.POINT_AMOUNT_INVALID, '사용 포인트는 0보다 커야 합니다.',);
             }
 
             const history = await tx.pointHistory.create({
