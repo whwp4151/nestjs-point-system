@@ -21,16 +21,16 @@ export class PolicyFactory implements OnModuleInit {
     providers
       .filter((wrapper: InstanceWrapper) => {
         const { instance } = wrapper;
-        if (!instance || typeof instance !== 'object') return false;
+          if (!instance || typeof instance !== 'object') return false;
 
-        // @Policy() 데코레이터 체크
-        return this.reflector.get(POLICY_METADATA_KEY, instance.constructor);
+          // @Policy() 데코레이터 체크
+          return this.reflector.get(POLICY_METADATA_KEY, instance.constructor);
       })
       .forEach((wrapper: InstanceWrapper) => {
-        const policy = wrapper.instance as PointPolicyInterface;
-        const policyCode = policy.getPolicyCode();
-        
-        this.policyMap.set(policyCode, policy);
+          const policy = wrapper.instance as PointPolicyInterface;
+          const policyCode = policy.getPolicyCode();
+          
+          this.policyMap.set(policyCode, policy);
       });
   }
 
