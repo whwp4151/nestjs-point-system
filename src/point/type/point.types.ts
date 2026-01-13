@@ -9,10 +9,12 @@ export enum PointState {
   POINT_PAID = 'POINT_PAID',                    // 포인트 지급한 상태
 }
 
-export enum PolicyCode {
-  WELCOME = 'WELCOME',
-  DAILY_LOGIN = 'DAILY_LOGIN',
-}
+export const POLICY_CODES = [
+  'WELCOME',
+  'DAILY_LOGIN',
+ ] as const;
+
+export type PolicyCode = typeof POLICY_CODES[number];
 
 // 정책 메타데이터
 export interface PolicyMetadata {
@@ -23,12 +25,12 @@ export interface PolicyMetadata {
 
 // 정책 코드별 메타데이터
 export const POLICY_METADATA: Record<PolicyCode, PolicyMetadata> = {
-  [PolicyCode.WELCOME]: {
+  WELCOME: {
     name: '가입 축하 포인트',
     description: '회원 가입 시 1회만 적립',
     amount: 1000,
   },
-  [PolicyCode.DAILY_LOGIN]: {
+  DAILY_LOGIN: {
     name: '일일 로그인 포인트',
     description: '하루 1회 적립 가능',
     amount: 100,

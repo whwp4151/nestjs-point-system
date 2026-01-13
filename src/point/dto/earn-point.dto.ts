@@ -1,10 +1,10 @@
-import { IsEnum, IsOptional, IsNumber, Min } from 'class-validator';
-import { PolicyCode } from '../type/point.types';
+import { IsIn, IsNumber } from 'class-validator';
+import { POLICY_CODES, PolicyCode } from '../type/point.types';
 
 export class EarnPointDto {
   @IsNumber()
   userId: number;
 
-  @IsEnum(PolicyCode)
+  @IsIn(POLICY_CODES)
   policyCode: PolicyCode;
 }
