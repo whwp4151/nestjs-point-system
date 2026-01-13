@@ -1,7 +1,7 @@
 import { CustomException } from '@/common/exception/custom.exception';
 import { ErrorCode } from '@/common/exception/error-code';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 
 @Controller('health')
 export class HealthController {
@@ -23,7 +23,7 @@ export class HealthController {
       const isHealthy = await this.prisma.healthCheck();
 
       if (!isHealthy) {
-        throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, 'Database connection failed.',);
+        throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, 'Database connection failed.', HttpStatus.INTERNAL_SERVER_ERROR);
       }
 
       return {

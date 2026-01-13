@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { HttpStatus, Injectable, OnModuleInit } from "@nestjs/common";
 import { DiscoveryService, ModuleRef, Reflector } from "@nestjs/core";
 import { PointPolicyInterface } from "./interface/point-policy.interface";
 import { PolicyCode } from "@/point/type/point.types";
@@ -43,7 +43,7 @@ export class PolicyFactory implements OnModuleInit {
     const policy = this.policyMap.get(code);
     
     if (!policy) {
-      throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, `지원하지 않는 정책 코드입니다: ${code}`,);
+      throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, `지원하지 않는 정책 코드입니다: ${code}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
     return policy;
