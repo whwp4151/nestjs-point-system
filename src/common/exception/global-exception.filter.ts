@@ -20,9 +20,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         } else if (exception instanceof HttpException) {
             status = exception.getStatus();
             message = exception.message;
-        } else {
-            console.error(exception);
         }
+
+        console.error(exception);
 
         response.status(status).json({
             code,
