@@ -12,7 +12,7 @@ export class DailyLoginPolicy implements PointPolicyInterface {
     private readonly metadata = POLICY_METADATA[this.policyCode];
 
     getPolicyCode(): PolicyCode {
-        return this.policyCode
+        return this.policyCode;
     }
 
     async calcPoint(userId: number, prisma: PrismaTx): Promise<number> {

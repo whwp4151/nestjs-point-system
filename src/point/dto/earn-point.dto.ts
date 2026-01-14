@@ -5,6 +5,6 @@ export class EarnPointDto {
   @IsNumber()
   userId: number;
 
-  @IsIn(POLICY_CODES)
+  @IsIn([...POLICY_CODES])
   policyCode: PolicyCode;
 }
