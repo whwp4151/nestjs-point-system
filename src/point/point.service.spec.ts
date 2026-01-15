@@ -60,7 +60,7 @@ describe('PointService', () => {
                 calcPoint: jest.fn().mockResolvedValue(100),
             };
 
-            policyFactory.getPolicy = jest.fn().mockReturnValue(mockPolicy);
+            (policyFactory.getPolicy as jest.Mock).mockReturnValue(mockPolicy);
 
             txMock.pointHistory.create.mockResolvedValue({
                 id: 1,
