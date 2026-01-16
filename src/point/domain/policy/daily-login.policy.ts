@@ -8,10 +8,11 @@ import { PointState, POLICY_METADATA, PolicyCode, PrismaTx } from "@/point/type/
 @Policy()
 export class DailyLoginPolicy implements PointPolicyInterface {
 
-    private readonly metadata = POLICY_METADATA[PolicyCode.DAILY_LOGIN];
+    private readonly policyCode: PolicyCode = 'DAILY_LOGIN';
+    private readonly metadata = POLICY_METADATA[this.policyCode];
 
     getPolicyCode(): PolicyCode {
-        return PolicyCode.DAILY_LOGIN;
+        return this.policyCode;
     }
 
     async calcPoint(userId: number, prisma: PrismaTx): Promise<number> {
@@ -30,7 +31,7 @@ export class DailyLoginPolicy implements PointPolicyInterface {
     
         return {
             point: this.metadata.amount, 
-            policyCode: PolicyCode.DAILY_LOGIN, 
+            policyCode: this.policyCode, 
             state: state
         };
     }
@@ -49,7 +50,7 @@ export class DailyLoginPolicy implements PointPolicyInterface {
         const existingHistory = await prisma.pointHistory.findFirst({
             where: {
                 userId: userId,
-                policyType: PolicyCode.DAILY_LOGIN,
+                policyType: this.policyCode,
                 createdAt: {
                     gte: today,
                     lt: tomorrow,

@@ -8,10 +8,11 @@ import { Policy } from "./policy.decorator";
 @Policy()
 export class WelcomePolicy implements PointPolicyInterface {
 
-  private readonly metadata = POLICY_METADATA[PolicyCode.WELCOME];
+  private readonly policyCode: PolicyCode = 'WELCOME';
+  private readonly metadata = POLICY_METADATA[this.policyCode];
 
   getPolicyCode(): PolicyCode {
-    return PolicyCode.WELCOME;
+    return this.policyCode;
   }
 
   async calcPoint(userId: number, prisma: PrismaTx): Promise<number> {
@@ -30,7 +31,7 @@ export class WelcomePolicy implements PointPolicyInterface {
 
     return {
       point: this.metadata.amount, 
-      policyCode: PolicyCode.WELCOME, 
+      policyCode: this.policyCode, 
       state: state
     };
   }
@@ -41,7 +42,7 @@ export class WelcomePolicy implements PointPolicyInterface {
     const existingHistory = await prisma.pointHistory.findFirst({
       where: {
         userId: userId,
-        policyType: PolicyCode.WELCOME,
+        policyType: this.policyCode,
       },
     });
 
