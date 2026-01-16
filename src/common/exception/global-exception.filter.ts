@@ -1,9 +1,12 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from "@nestjs/common";
 import { ErrorCode } from "./error-code";
 import { CustomException } from "./custom.exception";
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+
+    private readonly logger = new Logger(GlobalExceptionFilter.name);
+    
     catch(exception: unknown, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
@@ -22,7 +25,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             message = exception.message;
         }
 
-        console.error(exception);
+        this.logger.error(exception);
 
         response.status(status).json({
             code,

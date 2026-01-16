@@ -91,7 +91,7 @@ describe('PointService', () => {
                 policyCode: 'DAILY_LOGIN',
             };
 
-            policyFactory.getPolicy = jest.fn().mockReturnValue({
+            (policyFactory.getPolicy as jest.Mock).mockReturnValue({
                 calcPoint: jest.fn().mockResolvedValue(0),
             });
 
@@ -159,7 +159,7 @@ describe('PointService', () => {
 
     describe('getBalance', () => {
         it('현재 잔액을 조회한다', async () => {
-            prisma.pointHistory.aggregate = jest.fn().mockResolvedValue({
+            (prisma.pointHistory.aggregate as jest.Mock).mockResolvedValue({
                 _sum: { amount: 200 },
             });
 
